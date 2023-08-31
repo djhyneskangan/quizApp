@@ -1,5 +1,6 @@
 <script>
 	export let data;
+	console.log(data);
 </script>
 
 <body class="flex flex-col w-screen px-5 h-screen bg-[#1A1A1A] items-center">
