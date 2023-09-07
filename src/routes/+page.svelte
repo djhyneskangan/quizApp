@@ -1,8 +1,10 @@
 <script>
 	export let data;
+	console.log(data);
 	let currentQuestionIndex = 0;
 	let selectedAnswerIndex = -1;
-	console.log(data);
+	let correctAnswers = 0;
+	let totalQuestions = data.questions.length;
 
 	function goToNextQuestion() {
 		if (currentQuestionIndex < data.questions.length - 1) {
@@ -21,6 +23,16 @@
 	// @ts-ignore
 	function selectAnswer(index) {
 		selectedAnswerIndex = index;
+		const currentQuestion = data.questions[currentQuestionIndex];
+		if (index === currentQuestion.correctIndex) {
+			correctAnswers++;
+		}
+	}
+
+	function resetQuiz() {
+		currentQuestionIndex = 0;
+		selectedAnswerIndex = -1;
+		correctAnswers = 0;
 	}
 </script>
 
@@ -30,6 +42,7 @@
 	<h4 class="mt-10 text-xl text-white/60">
 		Question {currentQuestionIndex + 1} of {data.questions.length}
 	</h4>
+
 	<div class="mt-4 text-2xl text-white">
 		{data.questions[currentQuestionIndex]?.question}
 	</div>
@@ -37,8 +50,9 @@
 	<div class="grid grid-cols-2 gap-4 py-5">
 		{#each data.questions[currentQuestionIndex]?.answers as answer, index}
 			<button
-				class="bg-[#bae6fd]/80 py-4 px-6 rounded
-				   {index === selectedAnswerIndex ? 'selected-answer' : ''}"
+				class="bg-[#bae6fd]/80 py-4 px-6 rounded {index === selectedAnswerIndex
+					? 'selected-answer'
+					: ''}"
 				on:click={() => selectAnswer(index)}
 			>
 				{answer}
@@ -55,6 +69,25 @@
 			Next Question
 		</button>
 	</div>
+
+	<!-- Add a condition to display the final score only after the last question -->
+	{#if currentQuestionIndex === totalQuestions - 1}
+		{#if selectedAnswerIndex !== -1}
+			<div class="mt-4 text-2xl text-white">
+				{#if correctAnswers === totalQuestions}
+					<!-- Display a success message if all answers are correct -->
+					<p>Congratulations! You answered all questions correctly!</p>
+				{:else}
+					<!-- Display the final score if not all answers are correct -->
+					<p>Your final score:</p>
+					<p>{correctAnswers} out of {totalQuestions}</p>
+				{/if}
+				<button class="bg-[#bae6fd]/80 py-4 px-6 rounded mt-4 text-black" on:click={resetQuiz}>
+					Restart Quiz
+				</button>
+			</div>
+		{/if}
+	{/if}
 
 	<style>
 		.selected-answer {
